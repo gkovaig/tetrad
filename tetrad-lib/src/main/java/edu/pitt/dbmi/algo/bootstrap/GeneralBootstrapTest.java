@@ -34,9 +34,9 @@ public class GeneralBootstrapTest {
 	private boolean runParallel = true;
 
 	private Algorithm algorithm = null;
-	
+
 	private MultiDataSetAlgorithm multiDataSetAlgorithm = null;
-	
+
 	private long seed = -1;
 
 	private List<Graph> PAGs;
@@ -67,16 +67,16 @@ public class GeneralBootstrapTest {
 	}
 
 	/**
-	 * Sets the output stream that output (except for log output) should be sent
-	 * to. By detault System.out.
+	 * Sets the output stream that output (except for log output) should be sent to.
+	 * By detault System.out.
 	 */
 	public void setOut(PrintStream out) {
 		this.out = out;
 	}
 
 	/**
-	 * @return the output stream that output (except for log output) should be
-	 *         sent to.
+	 * @return the output stream that output (except for log output) should be sent
+	 *         to.
 	 */
 	public PrintStream getOut() {
 		return out;
@@ -84,10 +84,10 @@ public class GeneralBootstrapTest {
 
 	public void setParameters(Parameters parameters) {
 		this.parameters = parameters;
-        Object obj = parameters.get("printStream");
-        if (obj instanceof PrintStream) {
-            setOut((PrintStream) obj);
-        }
+		Object obj = parameters.get("printStream");
+		if (obj instanceof PrintStream) {
+			setOut((PrintStream) obj);
+		}
 	}
 
 	public void setNumBootstrapSamples(int numBootstrapSamples) {
@@ -115,9 +115,9 @@ public class GeneralBootstrapTest {
 	}
 
 	public void setEdgeEnsemble(String edgeEnsemble) {
-		if(edgeEnsemble.equalsIgnoreCase("Highest")){
+		if (edgeEnsemble.equalsIgnoreCase("Highest")) {
 			this.edgeEnsemble = BootstrapEdgeEnsemble.Highest;
-		}else if(edgeEnsemble.equalsIgnoreCase("Majority")){
+		} else if (edgeEnsemble.equalsIgnoreCase("Majority")) {
 			this.edgeEnsemble = BootstrapEdgeEnsemble.Majority;
 		}
 	}
@@ -150,7 +150,8 @@ public class GeneralBootstrapTest {
 		bootstrapSearch = new GeneralBootstrapSearch(dataSets);
 	}
 
-	public GeneralBootstrapTest(List<DataSet> dataSets, MultiDataSetAlgorithm multiDataSetAlgorithm, int numBootstrapSamples) {
+	public GeneralBootstrapTest(List<DataSet> dataSets, MultiDataSetAlgorithm multiDataSetAlgorithm,
+			int numBootstrapSamples) {
 		this.multiDataSetAlgorithm = multiDataSetAlgorithm;
 		bootstrapSearch = new GeneralBootstrapSearch(dataSets);
 		bootstrapSearch.setNumOfBootstrap(numBootstrapSamples);
@@ -161,20 +162,20 @@ public class GeneralBootstrapTest {
 
 		start = System.currentTimeMillis();
 
-		if(algorithm != null){
+		if (algorithm != null) {
 			bootstrapSearch.setAlgorithm(algorithm);
-		}else{
+		} else {
 			bootstrapSearch.setMultiDataSetAlgorithm(multiDataSetAlgorithm);
 		}
 		bootstrapSearch.setRunningMode(runParallel);
 		bootstrapSearch.setVerbose(verbose);
 		bootstrapSearch.setParameters(parameters);
-		
-		if(!knowledge.isEmpty()){
+
+		if (!knowledge.isEmpty()) {
 			bootstrapSearch.setKnowledge(knowledge);
 		}
-		
-		if(initialGraph != null){
+
+		if (initialGraph != null) {
 			bootstrapSearch.setInitialGraph(initialGraph);
 		}
 
@@ -220,15 +221,16 @@ public class GeneralBootstrapTest {
 		out.println("PAGs: " + PAGs.size());
 		out.println("Ensemble: " + edgeEnsemble);
 		out.println();
-		if(PAGs == null || PAGs.size() == 0)return new EdgeListGraph();
-		
-		int i=0;
+		if (PAGs == null || PAGs.size() == 0)
+			return new EdgeListGraph();
+
+		int i = 0;
 		for (Graph g : PAGs) {
 			if (g != null) {
-				if(pag == null){
+				if (pag == null) {
 					pag = g;
 				}
-				if(verbose){
+				if (verbose) {
 					out.println("Sampling Search Result (" + i + "):");
 					out.println(GraphUtils.graphToText(g));
 					out.println();
@@ -236,12 +238,13 @@ public class GeneralBootstrapTest {
 				}
 			}
 		}
-		if(pag==null)return new EdgeListGraph();
-		
+		if (pag == null)
+			return new EdgeListGraph();
+
 		// Sort nodes by its name for fixing the edge orientation
 		List<Node> nodes = pag.getNodes();
 		Collections.sort(nodes);
-		
+
 		Graph complete = new EdgeListGraph(nodes);
 		complete.fullyConnect(Endpoint.TAIL);
 
@@ -258,12 +261,6 @@ public class GeneralBootstrapTest {
 			double AbB = 0.0;
 			double AuB = 0.0;
 
-			// dd, nl, pd, pl
-			double dd = 0.0;
-			double nl = 0.0;
-			double pd = 0.0;
-			double pl = 0.0;
-			
 			Node n1 = e.getNode1();
 			Node n2 = e.getNode2();
 
@@ -276,11 +273,15 @@ public class GeneralBootstrapTest {
 			// compute probability for each edge type
 			Edge eNil = new Edge(n1, n2, Endpoint.NULL, Endpoint.NULL);
 			AnilB = getProbability(eNil);
-			out.println(n1 + " [no edge] " + n2 + " : " + AnilB);
+			if (verbose) {
+				out.println(n1 + " [no edge] " + n2 + " : " + AnilB);
+			}
 
 			Edge eTA = new Edge(n1, n2, Endpoint.TAIL, Endpoint.ARROW);
 			AtoB = getProbability(eTA);
-			out.println(eTA + " : " + AtoB);
+			if (verbose) {
+				out.println(eTA + " : " + AtoB);
+			}
 			if (AtoB > maxEdgeProb) {
 				edge = eTA;
 				maxEdgeProb = AtoB;
@@ -288,7 +289,9 @@ public class GeneralBootstrapTest {
 
 			Edge eAT = new Edge(n1, n2, Endpoint.ARROW, Endpoint.TAIL);
 			BtoA = getProbability(eAT);
-			out.println(eAT + " : " + BtoA);
+			if (verbose) {
+				out.println(eAT + " : " + BtoA);
+			}
 			if (BtoA > maxEdgeProb) {
 				edge = eAT;
 				maxEdgeProb = BtoA;
@@ -296,7 +299,9 @@ public class GeneralBootstrapTest {
 
 			Edge eCA = new Edge(n1, n2, Endpoint.CIRCLE, Endpoint.ARROW);
 			ACtoB = getProbability(eCA);
-			out.println(eCA + " : " + ACtoB);
+			if (verbose) {
+				out.println(eCA + " : " + ACtoB);
+			}
 			if (ACtoB > maxEdgeProb) {
 				edge = eCA;
 				maxEdgeProb = ACtoB;
@@ -304,7 +309,9 @@ public class GeneralBootstrapTest {
 
 			Edge eAC = new Edge(n1, n2, Endpoint.ARROW, Endpoint.CIRCLE);
 			BCtoA = getProbability(eAC);
-			out.println(eAC + " : " + BCtoA);
+			if (verbose) {
+				out.println(eAC + " : " + BCtoA);
+			}
 			if (BCtoA > maxEdgeProb) {
 				edge = eAC;
 				maxEdgeProb = BCtoA;
@@ -312,7 +319,9 @@ public class GeneralBootstrapTest {
 
 			Edge eCC = new Edge(n1, n2, Endpoint.CIRCLE, Endpoint.CIRCLE);
 			AccB = getProbability(eCC);
-			out.println(eCC + " : " + AccB);
+			if (verbose) {
+				out.println(eCC + " : " + AccB);
+			}
 			if (AccB > maxEdgeProb) {
 				edge = eCC;
 				maxEdgeProb = AccB;
@@ -320,7 +329,9 @@ public class GeneralBootstrapTest {
 
 			Edge eAA = new Edge(n1, n2, Endpoint.ARROW, Endpoint.ARROW);
 			AbB = getProbability(eAA);
-			out.println(eAA + " : " + AbB);
+			if (verbose) {
+				out.println(eAA + " : " + AbB);
+			}
 			if (AbB > maxEdgeProb) {
 				edge = eAA;
 				maxEdgeProb = AbB;
@@ -328,7 +339,9 @@ public class GeneralBootstrapTest {
 
 			Edge eTT = new Edge(n1, n2, Endpoint.TAIL, Endpoint.TAIL);
 			AuB = getProbability(eTT);
-			out.println(eTT + " : " + AuB);
+			if (verbose) {
+				out.println(eTT + " : " + AuB);
+			}
 			if (AuB > maxEdgeProb) {
 				edge = eTT;
 				maxEdgeProb = AuB;
@@ -350,8 +363,10 @@ public class GeneralBootstrapTest {
 			}
 
 			if (edge != null) {
-				out.println("Final result: " + edge + " : " + maxEdgeProb);
-				
+				if (verbose) {
+					out.println("Final result: " + edge + " : " + maxEdgeProb);
+				}
+
 				edge.addEdgeTypeProbability(new EdgeTypeProbability(EdgeTypeProbability.EdgeType.nil, AnilB));
 				edge.addEdgeTypeProbability(new EdgeTypeProbability(EdgeTypeProbability.EdgeType.ta, AtoB));
 				edge.addEdgeTypeProbability(new EdgeTypeProbability(EdgeTypeProbability.EdgeType.at, BtoA));
@@ -362,22 +377,22 @@ public class GeneralBootstrapTest {
 				edge.addEdgeTypeProbability(new EdgeTypeProbability(EdgeTypeProbability.EdgeType.tt, AuB));
 
 				Map<Property, Double> properties = getPropertyProbability(n1, n2);
-				if(properties != null && properties.size() > 0){
-					for(Property property : properties.keySet()){
+				if (properties != null && properties.size() > 0) {
+					for (Property property : properties.keySet()) {
+						out.println("generateBootstrapGraph: " + property.toString());
 						double prob = properties.get(property);
-						if(edgeEnsemble == BootstrapEdgeEnsemble.Majority){
-							if(prob > .5){
+						if (edgeEnsemble == BootstrapEdgeEnsemble.Majority) {
+							if (prob > .5) {
 								edge.addProperty(property);
 							}
-						}else{
+						} else {
 							edge.addProperty(property);
 						}
 					}
 				}
-				
+
 				graph.addEdge(edge);
 			}
-			out.println();
 		}
 
 		return graph;
@@ -397,27 +412,38 @@ public class GeneralBootstrapTest {
 			if (g.isAdjacentTo(node1, node2)) {
 				Edge edge = g.getEdge(node1, node2);
 				List<Property> properties = edge.getProperties();
-				if(properties != null && properties.size() > 0){
-					if(count == null){
+				if (properties != null && properties.size() > 0) {
+					out.println("getPropertyProbability: " + edge.toString());
+
+					if (count == null) {
 						count = new HashMap<>();
 					}
-					for(Property property : properties){
+					for (Property property : properties) {
+						out.println("getPropertyProbability: " + node1.getName() + " " + edge.getEndpoint1().toString() + " - "
+								+ edge.getEndpoint2().toString() + " " + node2.getName() + " : " + property.toString());
 						Double _no = count.get(property);
-						if(_no == null){
+						if (_no == null) {
 							_no = 0.0;
 						}
 						_no++;
 						count.put(property, _no);
+						//if (verbose) {
+							out.println("getPropertyProbability: " + node1.getName() + " " + edge.getEndpoint1().toString() + " - "
+									+ edge.getEndpoint2().toString() + " " + node2.getName() + " : " + property.toString());
+						//}
 					}
 				}
 			}
 		}
-		
-		if(count != null && count.size() > 0){
-			for(Property property : count.keySet()){
+
+		if (count != null && count.size() > 0) {
+			for (Property property : count.keySet()) {
 				Double _no = count.get(property);
-				_no = _no/(double)n;
+				_no = _no / (double) n;
 				count.put(property, _no);
+				//if (verbose) {
+					out.println("getPropertyProbability: " + node1.getName() + " : " + node2.getName() + " : " + property.toString() + " : " + _no);
+				//}
 			}
 		}
 
